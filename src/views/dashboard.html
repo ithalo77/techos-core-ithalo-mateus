@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechOS Core - Dashboard</title>
+    <!-- Tailwind CSS para Estilização Responsiva -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- Toastify JS para Alertas Dinâmicos (Biblioteca de Terceiros) -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+</head>
+<body class="bg-gray-100 font-sans leading-normal tracking-normal">
+
+    <div class="flex h-screen overflow-hidden">
+        
+        <!-- Sidebar / Formulário Lateral (UsuarioFactory) -->
+        <aside class="w-1/3 bg-white border-r border-gray-200 p-6 overflow-y-auto">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">Novo Chamado</h2>
+            <form id="osForm" class="space-y-4">
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Tipo de Utilizador:</label>
+                    <select id="tipoUsuario" class="w-full border rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="CLIENTE">Cliente</option>
+                        <option value="TECNICO">Técnico</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-2">ID:</label>
+                    <input type="number" id="userId" class="w-full border rounded p-2" required>
+                </div>
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Nome:</label>
+                    <input type="text" id="userNome" class="w-full border rounded p-2" required>
+                </div>
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Email:</label>
+                    <input type="email" id="userEmail" class="w-full border rounded p-2" required>
+                </div>
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Descrição da OS:</label>
+                    <textarea id="osDescricao" class="w-full border rounded p-2" required></textarea>
+                </div>
+                <button type="submit" class="w-full bg-blue-600 text-white font-bold py-2 px-4 rounded hover:bg-blue-700 transition">
+                    Criar Ordem de Serviço
+                </button>
+            </form>
+        </aside>
+
+        <!-- Conteúdo Principal / Dashboard -->
+        <main class="flex-1 flex flex-col overflow-y-auto">
+            <!-- Painel Superior (Métricas / Singleton) -->
+            <header class="bg-white shadow p-6 flex justify-between items-center">
+                <h1 class="text-2xl font-bold text-gray-900">TechOS Core - Painel de Controlo</h1>
+                <div class="bg-blue-100 text-blue-800 px-4 py-2 rounded-full font-semibold text-sm">
+                    Sistema Ativo (Singleton)
+                </div>
+            </header>
+
+            <!-- Tabela Central de Ordens de Serviço -->
+            <section class="p-6">
+                <div class="bg-white shadow rounded-lg overflow-hidden">
+                    <table class="min-w-full leading-normal">
+                        <thead>
+                            <tr>
+                                <th class="px-5 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase">ID OS</th>
+                                <th class="px-5 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase">Responsável</th>
+                                <th class="px-5 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase">Tipo</th>
+                                <th class="px-5 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase">Descrição</th>
+                                <th class="px-5 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabelaOS">
+                            <!-- Inserido dinamicamente via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Script Toastify para Alertas -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <script type="module">
+        import { OrdemServicoController } from '../controllers/OrdemServicoController.js';
+
+        const controller = new OrdemServicoController();
+        let contadorOS = 1;
+
+        document.getElementById('osForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const tipo = document.getElementById('tipoUsuario').value;
+            const dadosUsuario = {
+                id: document.getElementById('userId').value,
+                nome: document.getElementById('userNome').value,
+                email: document.getElementById('userEmail').value,
+                telefone: '81999999999',
+                especialidade: 'Manutenção'
+            };
+            const dadosOS = {
+                id: contadorOS++,
+                descricao: document.getElementById('osDescricao').value
+            };
+
+            const novaOS = controller.criarNovoChamado(tipo, dadosUsuario, dadosOS);
+
+            // Atualizar Tabela Dinamicamente
+            const tbody = document.getElementById('tabelaOS');
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">#${novaOS.id}</td>
+                <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">${novaOS.responsavel}</td>
+                <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">${novaOS.tipo}</td>
+                <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">${novaOS.descricao}</td>
+                <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                    <span class="px-2 py-1 font-semibold leading-tight text-yellow-700 bg-yellow-100 rounded-full">${novaOS.status}</span>
+                </td>
+            `;
+            tbody.appendChild(tr);
+
+            // Disparar Biblioteca Toastify
+            Toastify({
+                text: `Ordem de Serviço #${novaOS.id} criada com sucesso!`,
+                duration: 3000,
+                close: true,
+                gravity: "top",
+                position: "right",
+                backgroundColor: "#48bb78",
+            }).showToast();
+
+            document.getElementById('osForm').reset();
+        });
+    </script>
+</body>
+</html>
