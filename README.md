@@ -37,3 +37,20 @@ classDiagram
     Usuario <|-- Cliente
     Usuario <|-- Tecnico
     OrdemServico --> Cliente
+
+
+# DOCUMENTAÇÃO DE UI/UX E COMPONENTES (SPRINT 3)
+
+## 1. ARQUITETURA DA INFORMAÇÃO E DASHBOARD
+- **Painel Superior:** Exibe totalizadores e métricas consumidas diretamente do GerenciadorOS (Singleton).
+- **Formulário Lateral:** Responsável pelo cadastro de novos usuários e chamados, acionando a UsuarioFactory[cite: 4].
+- **Tabela Central:** Lista dinâmica, estruturada e filtrável de Ordens de Serviço[cite: 4].
+
+## 2. COMPONENTES UI
+- **StatusBadge:** Indicadores visuais de estado com código de cores (Amarelo para ABERTA, Azul para EM ANDAMENTO, Verde para CONCLUÍDA)[cite: 4].
+- **UserCard:** Componente modular para exibição do avatar e dados dos Clientes ou Técnicos instanciados[cite: 4].
+
+## 3. CHECKLIST DE ACESSIBILIDADE (WCAG)
+- [x] Contraste mínimo de cores de 4.5:1 aplicado nas tabelas e badges de status[cite: 4].
+- [x] Suporte completo à navegação por teclado (TAB) em todos os campos de formulário e botões[cite: 4].
+- [x] Atribuição de rótulos ARIA (`aria-label`) para as ações de alteração de estado das OS[cite: 4].
